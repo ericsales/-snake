@@ -2,30 +2,41 @@
 #include <stdlib.h>
 #include <ncurses.h>
 #include <unistd.h>	//uso da função sleep
-#include "snack.h"
+#include "snake.h"
+
+//Const
+const int nline = 20;
+const int ncols = 40;
 
 //Funçoes
 void menu(WINDOW *);
 void game(WINDOW *);
 int *aloca(int);
+void desenha(WINDOW *, Cobra *, int);
 
 int main(){
 	//Inicializaçoes
-	int nline = 20, ncols = 40, loc_x = 0, loc_y = 0;	
-	int l = 1, c = 1;
-	char entrada;
-	char flag_a = 1, flag_s = 1, flag_d = 1, flag_w = 1;
+	int loc_x = 0, loc_y = 0, tam_snake = 4;	
+	char flag_a = 0, flag_s = 0, flag_d = 0, flag_w = 0;
+	
 	//Iniciando j1
 	Cobra j1;
 	j1.n = 800;
 	j1.x = aloca(j1.n);
 	j1.y = aloca(j1.n);
+	//Setando posição inicial
+	for(int i = 0; i < tam_snake; i++){
+		j1.x[i] = tam_snake - i;
+		j1.y[i] = 1;
+	}
 
 	//Iniciando a janela-------------------------------
 	initscr();
-	noecho();		//não mostra caracter na janela
+	noecho();			//não mostra caracter na janela
 	cbreak();
 	curs_set(0);		//esconde o cursor
+
+	//timeout(500);
 
 	scrollok(stdscr, TRUE);
 	nodelay(stdscr, TRUE);
@@ -43,23 +54,23 @@ int main(){
 	//loop
 	while(1){
 		//Movendo caracter
-		mvwprintw(win, l, c, "X");
-		wrefresh(win);
+		//desenha(win, j1, tam_snake);
+		mvwprintw(win, j1.y[0], j1.x[0], "X");	//LINHA   = y
+		wrefresh(win);				//COLUNAS = x
 
 		if(flag_w)
-			l--;
+			j1.y[0]--;
 		if(flag_s)
-			l++;
+			j1.y[0]++;
 		if(flag_d)
-			c++;
+			j1.x[0]++;
 		if(flag_a)
-			c--;
+			j1.x[0]--;
 
 		switch(getch()){
 			case 'w':
-				if((l-1) >= 1){
-					mvwprintw(win, l, c, " ");
-					l--;
+				if((j1.y[0]-1) >= 1){
+					j1.y[0]--;
 					flag_w = 1;
 					flag_a = 0;
 					flag_s = 0;
@@ -67,9 +78,8 @@ int main(){
 				}
 				break;
 			case 's':
-				if((l+1) < nline-1){
-					mvwprintw(win, l, c, " ");
-					l++;
+				if((j1.y[0]+1) < nline-1){
+					j1.y[0]++;
 					flag_w = 0;
 					flag_a = 0;
 					flag_s = 1;
@@ -78,9 +88,8 @@ int main(){
 				}
 				break;
 			case 'd':
-				if((c+1) < ncols-1){
-					mvwprintw(win, l, c, " ");
-					c++;
+				if((j1.x[0]+1) < ncols-1){
+					j1.x[0]++;
 					flag_w = 0;
 					flag_a = 0;
 					flag_s = 0;
@@ -89,9 +98,8 @@ int main(){
 				}
 				break;
 			case 'a':
-				if((c-1) >= 1){
-					mvwprintw(win, l, c, " ");
-					c--;
+				if((j1.x[0]-1) >= 1){
+					j1.x[0]--;
 					flag_w = 0;
 					flag_a = 1;
 					flag_s = 0;
@@ -101,7 +109,7 @@ int main(){
 				break;
 		}
 
-		napms(500);	//Pausa de 0,5 segundos
+		napms(300);	//Pausa de 0,5 segundos
 	}
 	
 	//Fim
@@ -113,54 +121,30 @@ int main(){
 	return 0;
 }
 
+void desenha(WINDOW *win, Cobra *A, int tam){
+	for(int i = 0; i < tam; i++){
+		mvwprintw(win, A->x[i], A->y[i], "X");
+		wrefresh(win);
+	}
+}
 
-void menu(WINDOW * win){
+void swap(Cobra *A, int tam){
+	for(int i = 0; i < tam; i++){
+		
+	}
+}
+
+void menu(WINDOW *win){
 	//menu---------------------------------------------
 	mvwprintw(win, 1, 1, "Star game press W,A,S or D");
 	mvwprintw(win, 2, 1, "Quit game press Q");
 	wrefresh(win);
 	getch();
+	mvwprintw(win, 1, 1, "                          ");
+	mvwprintw(win, 2, 1, "                 ");
+	wrefresh(win);
 }
-/*
-void game(WINDOW * win){
-	//keypad(stdscr, TRUE);
-	//loop
-	while((entrada = getch()) != 'q'){
-		//Movendo caracter
-		mvwprintw(win, l, c, "X");
-		wrefresh(win);
 
-		switch(entrada){
-			case 'w':
-				if((l-1) >= 1){
-					mvwprintw(win, l, c, " ");
-					l--;
-				}
-				break;
-			case 's':
-				if((l+1) < nline-1){
-					mvwprintw(win, l, c, " ");
-					l++;
-				}
-				break;
-			case 'd':
-				if((c+1) < ncols-1){
-					mvwprintw(win, l, c, " ");
-					c++;
-				}
-				break;
-			case 'a':
-				if((c-1) >= 1){
-					mvwprintw(win, l, c, " ");
-					c--;
-				}
-				break;
-			defaut:
-				break;
-		}
-	}
-}
-*/
 int *aloca(int n){
 	int *x;
 	x =  malloc(n * sizeof(int));

@@ -1,5 +1,5 @@
 all:
-	gcc main.c snack.h -o main -lncurses
+	gcc main.c snake.h -o main -lncurses
 
 clear:
 	rm main

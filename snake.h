@@ -1,10 +1,10 @@
-#ifndef SNACK_H
-#define SNACK_H
+#ifndef SNAKE_H
+#define SNAKE_H
 
 typedef struct{
-	int *x;
-	int *y;
-	int n;
+	int *x;		//Cordenadas das colunas
+	int *y;		//Cordenadas das linhas
+	int  n;		//Tamanho do vetor
 }Cobra;
 
 #endif
